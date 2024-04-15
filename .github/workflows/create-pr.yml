@@ -1,0 +1,35 @@
+name: create scheduled release branch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create_release_branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+      - name: Calculate next Wednesday's date
+        id: next_wednesday
+        run: |
+          current_day=$(date -u +%u)
+          days_until_wednesday=$(( (3 + 7 - current_day) % 7 ))
+          next_wednesday=$(date -u -d "+$days_until_wednesday days" "+%Y%m%d")
+          echo "date=$next_wednesday" >> $GITHUB_OUTPUT
+
+      - name: Create release branch
+        run: |
+          git checkout -b "release/${{ steps.next_wednesday.outputs.date }}"
+          git push origin "release/${{ steps.next_wednesday.outputs.date }}"
+
+      - name: Create pull request to master
+        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
+        with:
+          title: '[master] Release ${{ steps.next_wednesday.outputs.date }}'
+          branch: release/${{ steps.next_wednesday.outputs.date }}
+          base: master
+          labels: release
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+
