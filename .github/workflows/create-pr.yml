@@ -22,5 +22,15 @@ jobs:
         run: |
           git checkout -b "release/${{ steps.next_wednesday.outputs.date }}"
           git push origin "release/${{ steps.next_wednesday.outputs.date }}"
+          git checkout master
 
-
+      - name: Create pull request to master
+        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
+        with:
+          title: '[master] Release ${{ steps.next_wednesday.outputs.date }}'
+          branch: release/${{ steps.next_wednesday.outputs.date }}
+          base: master
+          labels: release
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+  
