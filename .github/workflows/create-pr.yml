@@ -20,9 +20,9 @@ jobs:
 
       - name: Create release branch
         run: |
-          git checkout develop
-          git pull
-          
+          git fetch origin develop:develop
+          git reset --hard develop
+
       - name: Create pull request to master
         uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e # v6.0.2
         with:
