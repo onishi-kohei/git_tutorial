@@ -20,6 +20,8 @@ jobs:
 
       - name: Create release branch
         run: |
+          git checkout develop
+          git pull
           git checkout -b "release/${{ steps.next_wednesday.outputs.date }}"
           git push origin "release/${{ steps.next_wednesday.outputs.date }}"
           git checkout master
