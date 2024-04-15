@@ -20,11 +20,12 @@ jobs:
 
       - name: Create release branch
         run: |
-          git reset --hard origin/develop
+          git checkout -b "release/${{ steps.next_wednesday.outputs.date }}"
+          git push origin "release/${{ steps.next_wednesday.outputs.date }}"
 
       - name: Create pull request from develop to master 
         run: |
-          gh pr create --base master --head develop --title "Release $next_wednesday" --body "Release $next_wednesday" --draft --label "release"
+          gh pr create --base master --head "release/${{ steps.next_wednesday.outputs.date }}" --title "[master] Release ${{ steps.next_wednesday.outputs.date }}" --body "Release $next_wednesday" --draft --label "release"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
